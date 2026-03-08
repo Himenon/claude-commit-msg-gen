@@ -22,6 +22,20 @@ pnpm add -g lefthook
 
 ### 3. Install the binary
 
+**Via curl (no Node.js required):**
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/Himenon/claude-commit-msg-gen/main/scripts/install.sh | sh
+```
+
+To install to a custom directory:
+
+```sh
+INSTALL_DIR="$HOME/.local/bin" curl -fsSL https://raw.githubusercontent.com/Himenon/claude-commit-msg-gen/main/scripts/install.sh | sh
+```
+
+**Via npm / pnpm:**
+
 ```sh
 pnpm install -g @himenon/claude-commit-msg-gen
 # or

@@ -30,7 +30,8 @@ git commit
 ├── scripts/
 │   ├── auto-commit-msg.sh            # シェルスクリプト版（代替案）
 │   ├── build.sh                      # クロスコンパイルスクリプト
-│   └── commit-prompt.txt             # プロンプトテンプレート（変更可能）
+│   ├── commit-prompt.txt             # プロンプトテンプレート（変更可能）
+│   └── install.sh                    # curl インストールスクリプト
 ├── bin/                              # ビルド済みバイナリ（.gitignore 対象）
 │   ├── claude-commit-msg-gen         # OS/ARCH 自動判定ラッパースクリプト
 │   ├── claude-commit-msg-gen-darwin-arm64
@@ -95,4 +96,8 @@ pnpm publish（または git tag v* push）
 
 `.github/workflows/ci.yml` — 全ブランチの push と pull_request でビルド検証。
 
-`.github/workflows/release.yml` — `v*` タグ push 時に4プラットフォームを並列ビルドし npm publish。全 action は SHA pinning 済み。
+`.github/workflows/release.yml` — `v*` タグ push 時に4プラットフォームを並列ビルドし、GitHub Release assets へのアップロードと npm publish を実行。全 action は SHA pinning 済み。
+
+## curl インストールの仕組み
+
+`scripts/install.sh` が `uname` で OS / ARCH を判定し、GitHub Release assets から対応バイナリを `curl` でダウンロードする。`INSTALL_DIR` 環境変数でインストール先を変更可能（デフォルト: `/usr/local/bin`）。`VERSION` 環境変数を指定しない場合は GitHub API から最新バージョンを自動取得する。

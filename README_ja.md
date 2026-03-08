@@ -22,6 +22,20 @@ pnpm add -g lefthook
 
 ### 3. バイナリをインストール
 
+**curl でインストール（Node.js 不要）:**
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/Himenon/claude-commit-msg-gen/main/scripts/install.sh | sh
+```
+
+インストール先を変更する場合:
+
+```sh
+INSTALL_DIR="$HOME/.local/bin" curl -fsSL https://raw.githubusercontent.com/Himenon/claude-commit-msg-gen/main/scripts/install.sh | sh
+```
+
+**npm / pnpm でインストール:**
+
 ```sh
 pnpm install -g @himenon/claude-commit-msg-gen
 # または
