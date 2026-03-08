@@ -1,4 +1,4 @@
-# claude-auto-commit
+# claude-commit-msg-gen
 
 [Claude Code](https://claude.ai/code) と [Lefthook](https://lefthook.dev/) を組み合わせ、`git commit` 実行時にステージングされた差分を自動解析してコミットメッセージを生成するサンプルリポジトリです。
 
@@ -62,8 +62,8 @@ curl -fsSL https://raw.githubusercontent.com/evilmartians/lefthook/master/script
 ### 2. リポジトリのクローン
 
 ```sh
-git clone https://github.com/your-org/claude-auto-commit.git
-cd claude-auto-commit
+git clone https://github.com/your-org/claude-commit-msg-gen.git
+cd claude-commit-msg-gen
 ```
 
 ### 3. Lefthook フックのインストール
@@ -79,7 +79,7 @@ lefthook install
 既存の Git リポジトリに本プロジェクトのファイルを取り込む場合は、以下のコマンドで必要なファイルを一括ダウンロードできます。
 
 ```sh
-REPO_URL="https://raw.githubusercontent.com/your-org/claude-auto-commit/main"
+REPO_URL="https://raw.githubusercontent.com/your-org/claude-commit-msg-gen/main"
 
 # スクリプトとプロンプトをダウンロード
 mkdir -p scripts
