@@ -31,7 +31,14 @@ fi
 ASSET_NAME="${BINARY_NAME}-${OS}-${ARCH}"
 DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${VERSION}/${ASSET_NAME}"
 
+TMP="$(mktemp)"
 echo "Downloading ${ASSET_NAME} ${VERSION} ..."
-curl -fsSL "$DOWNLOAD_URL" -o "${INSTALL_DIR}/${BINARY_NAME}"
-chmod +x "${INSTALL_DIR}/${BINARY_NAME}"
+curl -fsSL "$DOWNLOAD_URL" -o "$TMP"
+chmod +x "$TMP"
+
+if [ -w "$INSTALL_DIR" ]; then
+  mv "$TMP" "${INSTALL_DIR}/${BINARY_NAME}"
+else
+  sudo mv "$TMP" "${INSTALL_DIR}/${BINARY_NAME}"
+fi
 echo "Installed: ${INSTALL_DIR}/${BINARY_NAME}"
