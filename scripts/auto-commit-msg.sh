@@ -31,7 +31,15 @@ MAX_TOKENS="${CLAUDE_MAX_TOKENS:-150}"
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 
 # プロンプトファイルのパス
-PROMPT_FILE="${COMMIT_PROMPT_FILE:-${REPO_ROOT}/scripts/commit-prompt.txt}"
+# COMMIT_PROMPT_FILEが相対パスの場合はプロジェクトルートを基準に解決する
+if [ -n "$COMMIT_PROMPT_FILE" ]; then
+  case "$COMMIT_PROMPT_FILE" in
+    /*) PROMPT_FILE="$COMMIT_PROMPT_FILE" ;;
+    *)  PROMPT_FILE="${REPO_ROOT}/${COMMIT_PROMPT_FILE}" ;;
+  esac
+else
+  PROMPT_FILE="${REPO_ROOT}/scripts/commit-prompt.txt"
+fi
 
 # プロンプトファイルが存在しない場合はスキップ
 if [ ! -f "$PROMPT_FILE" ]; then
