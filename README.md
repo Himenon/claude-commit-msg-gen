@@ -1,6 +1,6 @@
 # claude-commit-msg-gen
 
-[Claude Code](https://claude.ai/code) と [Lefthook](https://lefthook.dev/) を組み合わせ、`git commit` 実行時にステージングされた差分を自動解析してコミットメッセージを生成するサンプルリポジトリです。
+[Claude API](https://www.anthropic.com/) と [Lefthook](https://lefthook.dev/) を組み合わせ、`git commit` 実行時にステージングされた差分を自動解析してコミットメッセージを生成するサンプルリポジトリです。
 
 生成されるコミットメッセージは [Conventional Commits](https://www.conventionalcommits.org/) 形式（`type(scope): subject`）に準拠します。
 
@@ -9,24 +9,28 @@
 ```
 git commit
   └─ lefthook: prepare-commit-msg フック
-       └─ scripts/auto-commit-msg.sh
+       └─ bin/claude-commit-msg-gen（Goバイナリ）
             ├─ git diff --cached でステージング差分を取得
-            ├─ scripts/commit-prompt.txt のプロンプトと組み合わせて Claude に送信
+            ├─ scripts/commit-prompt.txt のプロンプトと組み合わせて Claude API に送信
             └─ 生成されたメッセージをコミットメッセージファイルに書き込む
 ```
 
 - Merge Commit（`git pull` 等によるマージ）は自動生成をスキップします
 - `-m` オプションでメッセージを直接指定した場合もスキップします
-- Claude の呼び出しに失敗した場合は `git commit` を止めず、空のメッセージで続行します
+- Claude API の呼び出しに失敗した場合は `git commit` を止めず続行します
 
 ## 前提条件
 
 | ツール | インストール方法 |
 |---|---|
-| [Claude Code](https://claude.ai/code) | `npm install -g @anthropic-ai/claude-code` |
 | [Lefthook](https://lefthook.dev/) | 後述のインストール方法を参照 |
+| Go 1.23 以上 | [go.dev/dl](https://go.dev/dl/) またはローカルビルドには不要（pnpm でバイナリを取得） |
 
-Claude Code のセットアップ（APIキーの設定等）が完了していることを確認してください。
+また、Anthropic API キーが必要です。以下の環境変数をシェルの設定ファイル（`~/.zshrc` 等）に追加してください。
+
+```sh
+export ANTHROPIC_API_KEY="sk-ant-..."
+```
 
 ## セットアップ
 
@@ -66,7 +70,22 @@ git clone https://github.com/Himenon/claude-commit-msg-gen.git
 cd claude-commit-msg-gen
 ```
 
-### 3. Lefthook フックのインストール
+### 3. バイナリのセットアップ（どちらか一方）
+
+**方法 A: pnpm でインストール（推奨）**
+
+```sh
+pnpm install
+pnpm run build
+```
+
+**方法 B: Go でビルド**
+
+```sh
+go build -o bin/claude-commit-msg-gen-darwin-arm64 ./go
+```
+
+### 4. Lefthook フックのインストール
 
 ```sh
 lefthook install
@@ -81,14 +100,16 @@ lefthook install
 ```sh
 REPO_URL="https://raw.githubusercontent.com/Himenon/claude-commit-msg-gen/main"
 
-# スクリプトとプロンプトをダウンロード
+# 設定ファイルとスクリプトをダウンロード
 mkdir -p scripts
-curl -fsSL "$REPO_URL/scripts/auto-commit-msg.sh" -o scripts/auto-commit-msg.sh
-curl -fsSL "$REPO_URL/scripts/commit-prompt.txt"  -o scripts/commit-prompt.txt
-curl -fsSL "$REPO_URL/lefthook.yml"               -o lefthook.yml
-chmod +x scripts/auto-commit-msg.sh
+curl -fsSL "$REPO_URL/scripts/commit-prompt.txt" -o scripts/commit-prompt.txt
+curl -fsSL "$REPO_URL/scripts/build.sh"          -o scripts/build.sh
+curl -fsSL "$REPO_URL/lefthook.yml"              -o lefthook.yml
+curl -fsSL "$REPO_URL/package.json"              -o package.json
+chmod +x scripts/build.sh
 
-# フックをインストール
+# バイナリをビルドしてフックをインストール
+pnpm run build
 lefthook install
 ```
 
@@ -102,7 +123,7 @@ prepare-commit-msg:
     - name: auto-commit-message
       env:
         CLAUDE_MODEL: claude-haiku-4-5-20251001  # 使用モデル
-        CLAUDE_MAX_TOKENS: "150"                 # 最大トークン数（プロンプト指示として渡される）
+        CLAUDE_MAX_TOKENS: "150"                 # Anthropic API の max_tokens に渡される値
         COMMIT_PROMPT_FILE: scripts/commit-prompt.txt  # プロンプトファイルのパス
 ```
 
@@ -114,7 +135,7 @@ prepare-commit-msg:
 # より高精度なモデルを使用する
 CLAUDE_MODEL=claude-sonnet-4-6 git commit
 
-# トークン数を増やす
+# 生成トークン数を増やす
 CLAUDE_MAX_TOKENS=300 git commit
 
 # 別のプロンプトファイルを指定する
@@ -147,10 +168,21 @@ COMMIT_PROMPT_FILE=scripts/my-prompt.txt git commit
 
 ```
 .
-├── lefthook.yml                  # Lefthook 設定ファイル
-└── scripts/
-    ├── auto-commit-msg.sh        # コミットメッセージ自動生成スクリプト
-    └── commit-prompt.txt         # Claude へのプロンプトテンプレート
+├── go/
+│   ├── main.go                       # コミットメッセージ生成の Go 実装
+│   └── go.mod                        # Go モジュール定義
+├── scripts/
+│   ├── auto-commit-msg.sh            # シェルスクリプト版実装（参考用）
+│   ├── build.sh                      # Go バイナリのビルドスクリプト
+│   └── commit-prompt.txt             # Claude API へのプロンプトテンプレート
+├── bin/                              # ビルド済みバイナリ（.gitignore 対象）
+│   ├── claude-commit-msg-gen         # プラットフォーム自動判定ラッパー
+│   ├── claude-commit-msg-gen-darwin-arm64
+│   ├── claude-commit-msg-gen-darwin-amd64
+│   ├── claude-commit-msg-gen-linux-amd64
+│   └── claude-commit-msg-gen-linux-arm64
+├── lefthook.yml                      # Lefthook 設定ファイル
+└── package.json                      # npm パッケージ定義（@himenon/claude-commit-msg-gen）
 ```
 
 ## トラブルシューティング
@@ -163,21 +195,20 @@ COMMIT_PROMPT_FILE=scripts/my-prompt.txt git commit
 lefthook install
 ```
 
-**`Can't find lefthook in PATH` と表示される**
+**`Binary not found` と表示される**
 
-Lefthook がインストールされているか確認してください。
+バイナリが未ビルドの可能性があります。ビルドを実行してください。
 
 ```sh
-lefthook --version
+pnpm run build
 ```
 
-**Claude の呼び出しがスキップされる**
+**`ANTHROPIC_API_KEY が未設定` と表示される**
 
-Claude Code が正しくインストールされ、認証済みであることを確認してください。
+シェルの設定ファイルに API キーが設定されているか確認してください。
 
 ```sh
-claude --version
-claude  # インタラクティブセッションで認証状態を確認
+echo $ANTHROPIC_API_KEY
 ```
 
 **自動生成を一時的に無効にしたい**
