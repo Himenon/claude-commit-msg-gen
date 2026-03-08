@@ -33,6 +33,21 @@ lefthook install
 
 以上で `git commit` 時にコミットメッセージが自動生成されます。
 
+## API キーをシェル環境に書きたくない場合
+
+`lefthook-local.yml` に API キーを記述する方法があります。このファイルは `.gitignore` 対象のため、リポジトリに混入しません。
+
+```yaml
+# lefthook-local.yml（.gitignore 対象）
+prepare-commit-msg:
+  jobs:
+    - name: auto-commit-message
+      env:
+        ANTHROPIC_API_KEY: "sk-ant-..."
+```
+
+`lefthook-local.yml` は `lefthook.yml` の設定を上書き・マージします。記述した `env` のみが上書きされ、他の設定は `lefthook.yml` の値が引き続き使われます。
+
 ## トラブルシューティング
 
 **`Binary not found` と表示される**
