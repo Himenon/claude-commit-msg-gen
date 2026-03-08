@@ -108,7 +108,6 @@ jobs:
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version-file: 'package.json'
-          registry-url: "https://registry.npmjs.org"
           cache: "pnpm"
 
       - name: Download all binaries
@@ -130,9 +129,7 @@ jobs:
           pnpm version "$VERSION" --no-git-tag-version
 
       - name: Publish to npm (with provenance)
-        # NPM_CONFIG_PROVENANCE=true により、パッケージにビルド出所証明を付与する
-        # 証明には id-token: write 権限が必要
-        # NODE_AUTH_TOKEN には Granular Access Token（スコープ限定・有効期限付き）の使用を推奨
+        # npm Trusted Publishers（OIDC）による認証
+        # npmjs.com のパッケージ設定で本ワークフローを Trusted Publisher として登録済み
+        # id-token: write 権限で GitHub OIDC トークンを自動取得し、NODE_AUTH_TOKEN は不要
         run: NPM_CONFIG_PROVENANCE=true pnpm run release:npm:registry
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
