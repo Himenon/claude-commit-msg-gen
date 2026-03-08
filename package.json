@@ -17,7 +17,9 @@
   ],
   "scripts": {
     "build": "bash scripts/build.sh",
-    "format": "oxfmt"
+    "format": "oxfmt",
+    "release:npm:registry": "pnpm publish --access public --no-git-checks",
+    "release:github:registry": "pnpm publish --access public --no-git-checks"
   },
   "devDependencies": {
     "oxfmt": "^0.36.0"
