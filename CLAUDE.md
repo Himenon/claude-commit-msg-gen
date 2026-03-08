@@ -2,6 +2,10 @@
 
 プロジェクトの構造・コンポーネント設計は **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** を参照してください。
 
+## 作業ルール
+
+- ファイルを変更したら必ず `git commit` を実行すること
+
 ---
 
 ## プロジェクト概要
