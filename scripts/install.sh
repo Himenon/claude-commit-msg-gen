@@ -3,7 +3,7 @@ set -eu
 
 REPO="Himenon/claude-commit-msg-gen"
 BINARY_NAME="claude-commit-msg-gen"
-INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
+INSTALL_DIR="${INSTALL_DIR:-$HOME/.local/bin}"
 
 # Detect OS
 OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
@@ -31,14 +31,18 @@ fi
 ASSET_NAME="${BINARY_NAME}-${OS}-${ARCH}"
 DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${VERSION}/${ASSET_NAME}"
 
-TMP="$(mktemp)"
+mkdir -p "$INSTALL_DIR"
 echo "Downloading ${ASSET_NAME} ${VERSION} ..."
-curl -fsSL "$DOWNLOAD_URL" -o "$TMP"
-chmod +x "$TMP"
-
-if [ -w "$INSTALL_DIR" ]; then
-  mv "$TMP" "${INSTALL_DIR}/${BINARY_NAME}"
-else
-  sudo mv "$TMP" "${INSTALL_DIR}/${BINARY_NAME}"
-fi
+curl -fsSL "$DOWNLOAD_URL" -o "${INSTALL_DIR}/${BINARY_NAME}"
+chmod +x "${INSTALL_DIR}/${BINARY_NAME}"
 echo "Installed: ${INSTALL_DIR}/${BINARY_NAME}"
+
+# PATH guidance
+case ":${PATH}:" in
+  *":${INSTALL_DIR}:"*) ;;
+  *)
+    echo ""
+    echo "Add the following to your shell profile to use the command:"
+    echo "  export PATH=\"${INSTALL_DIR}:\$PATH\""
+    ;;
+esac
