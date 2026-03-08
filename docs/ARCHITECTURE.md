@@ -23,7 +23,7 @@ git commit
 │   └── release.yml                   # v* タグ push → npm publish CI
 ├── docs/
 │   ├── ARCHITECTURE.md               # 本ドキュメント
-│   └── shell-script-alternative.md  # シェルスクリプト版の代替実装
+│   └── SHELL-SCRIPT-ALTERNATIVE.md  # シェルスクリプト版の代替実装
 ├── go/
 │   ├── main.go                       # Anthropic API を直接呼び出す実装
 │   └── go.mod                        # Go 1.26、外部依存なし
