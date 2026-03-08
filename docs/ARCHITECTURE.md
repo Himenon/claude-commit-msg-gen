@@ -49,20 +49,20 @@ Anthropic API（`POST /v1/messages`）を標準ライブラリのみで直接呼
 
 **引数:**
 
-| 位置 | 内容 |
-|---|---|
-| `$1` | コミットメッセージファイルのパス（`COMMIT_EDITMSG`） |
+| 位置 | 内容                                                       |
+| ---- | ---------------------------------------------------------- |
+| `$1` | コミットメッセージファイルのパス（`COMMIT_EDITMSG`）       |
 | `$2` | コミットソース（`merge` / `message` のとき処理をスキップ） |
 
 **環境変数:**
 
-| 変数名 | デフォルト値 | 説明 |
-|---|---|---|
-| `ANTHROPIC_API_KEY` | — | Anthropic API キー（必須）。未設定時は `ANTHROPIC_AUTH_TOKEN` を参照 |
-| `CLAUDE_MODEL` | `claude-haiku-4-5-20251001` | 使用モデル |
-| `CLAUDE_MAX_TOKENS` | `150` | Anthropic API の `max_tokens` に直接渡される |
-| `COMMIT_PROMPT_FILE` | `scripts/commit-prompt.txt` | プロンプトファイルのパス（相対パスはリポジトリルート基準） |
-| `ANTHROPIC_BASE_URL` | `https://api.anthropic.com` | API エンドポイント（プロキシ利用時に変更） |
+| 変数名               | デフォルト値                | 説明                                                                 |
+| -------------------- | --------------------------- | -------------------------------------------------------------------- |
+| `ANTHROPIC_API_KEY`  | —                           | Anthropic API キー（必須）。未設定時は `ANTHROPIC_AUTH_TOKEN` を参照 |
+| `CLAUDE_MODEL`       | `claude-haiku-4-5-20251001` | 使用モデル                                                           |
+| `CLAUDE_MAX_TOKENS`  | `150`                       | Anthropic API の `max_tokens` に直接渡される                         |
+| `COMMIT_PROMPT_FILE` | `scripts/commit-prompt.txt` | プロンプトファイルのパス（相対パスはリポジトリルート基準）           |
+| `ANTHROPIC_BASE_URL` | `https://api.anthropic.com` | API エンドポイント（プロキシ利用時に変更）                           |
 
 **エラーハンドリング方針:** 全エラーで `exit 0`。API 障害・設定ミスがあっても `git commit` を止めない。
 

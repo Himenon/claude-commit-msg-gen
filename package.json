@@ -2,12 +2,12 @@
   "name": "@himenon/claude-commit-msg-gen",
   "version": "0.1.0",
   "description": "Claude API を使って git diff から Conventional Commits 形式のコミットメッセージを自動生成する CLI ツール",
+  "license": "MIT",
+  "author": "K.Himeno",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Himenon/claude-commit-msg-gen.git"
   },
-  "license": "MIT",
-  "author": "K.Himeno",
   "bin": {
     "claude-commit-msg-gen": "bin/claude-commit-msg-gen"
   },
@@ -16,6 +16,11 @@
     "scripts/commit-prompt.txt"
   ],
   "scripts": {
-    "build": "bash scripts/build.sh"
-  }
+    "build": "bash scripts/build.sh",
+    "format": "oxfmt"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.36.0"
+  },
+  "packageManager": "pnpm@10.31.0"
 }

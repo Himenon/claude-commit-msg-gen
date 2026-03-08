@@ -32,10 +32,10 @@ npm パッケージ名: `@himenon/claude-commit-msg-gen`
 
 `lefthook.yml` の `env` セクションに以下を明示:
 
-| 環境変数 | デフォルト値 | 用途 |
-|---|---|---|
-| `CLAUDE_MODEL` | `claude-haiku-4-5-20251001` | 使用モデル |
-| `CLAUDE_MAX_TOKENS` | `"150"` | 最大トークン数 |
+| 環境変数             | デフォルト値                | 用途                                 |
+| -------------------- | --------------------------- | ------------------------------------ |
+| `CLAUDE_MODEL`       | `claude-haiku-4-5-20251001` | 使用モデル                           |
+| `CLAUDE_MAX_TOKENS`  | `"150"`                     | 最大トークン数                       |
 | `COMMIT_PROMPT_FILE` | `scripts/commit-prompt.txt` | プロンプトファイルパス（相対パス可） |
 
 ### 3. Go バイナリ実装への移行
