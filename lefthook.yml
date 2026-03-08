@@ -1,6 +1,6 @@
 prepare-commit-msg:
   jobs:
     - name: auto-commit-message
-      run: sh {root}/scripts/auto-commit-msg.sh {1} {2}
+      run: sh "$(git rev-parse --show-toplevel)/scripts/auto-commit-msg.sh" {1} {2}
       # エラー発生時もgit commitを止めない
       fail_text: "コミットメッセージの自動生成をスキップしました"
