@@ -1,12 +1,12 @@
 prepare-commit-msg:
   jobs:
     - name: auto-commit-message
-      run: sh "$(git rev-parse --show-toplevel)/scripts/auto-commit-msg.sh" {1} {2}
+      run: sh "$(git rev-parse --show-toplevel)/bin/claude-commit-msg-gen" {1} {2}
       env:
         # 使用するClaudeモデル。別モデルを使う場合は環境変数で上書きする
         # 例: CLAUDE_MODEL=claude-sonnet-4-6 git commit
         CLAUDE_MODEL: claude-haiku-4-5-20251001
-        # 生成するコミットメッセージの最大トークン数（プロンプト指示として渡される）
+        # 生成するコミットメッセージの最大トークン数（max_tokens として Anthropic API に渡される）
         CLAUDE_MAX_TOKENS: "150"
         # コミットメッセージ生成に使うプロンプトファイルのパス（プロジェクトルートからの相対パス）
         # 別のプロンプトを使う場合はファイルパスを変更する
