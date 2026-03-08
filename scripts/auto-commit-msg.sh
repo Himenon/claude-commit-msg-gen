@@ -24,6 +24,7 @@ fi
 
 # 設定値（環境変数で上書き可能）
 MODEL="${CLAUDE_MODEL:-claude-haiku-4-5-20251001}"
+# CLAUDE_MAX_TOKENS はプロンプトへの指示として使用する（APIオプションではない）
 MAX_TOKENS="${CLAUDE_MAX_TOKENS:-150}"
 
 # プロジェクトルートを取得
@@ -47,16 +48,18 @@ if [ -z "$DIFF" ]; then
 fi
 
 # プロンプトを構築
+# MAX_TOKENSをプロンプトに含めて出力量を制御する
 PROMPT="$(cat "$PROMPT_FILE")
+（出力は${MAX_TOKENS}トークン以内に収めること）
 
 ---
 $(echo "$DIFF" | head -c 8000)
 "
 
 # Claudeにコミットメッセージを生成させる
-GENERATED_MSG="$(echo "$PROMPT" | claude --print \
+# CLAUDECODE変数をunsetしてネストしたセッション制限を回避する
+GENERATED_MSG="$(echo "$PROMPT" | env -u CLAUDECODE claude --print \
   --model "$MODEL" \
-  --max-budget-usd 0.01 \
   --output-format text \
   --dangerously-skip-permissions \
   2>/dev/null)"
