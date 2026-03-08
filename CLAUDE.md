@@ -79,9 +79,23 @@ git add <file>
 git commit       # フックが起動し自動生成される
 ```
 
-## publish
+## リリース手順
+
+タグを打つ前に必ず package.json のバージョンを更新してコミットすること。
 
 ```sh
-git tag v1.0.0
-git push origin v1.0.0  # GitHub Actions が自動でビルド・publish
+# 1. package.json のバージョンを更新
+pnpm version <new-version> --no-git-tag-version
+# 例: pnpm version 0.0.4 --no-git-tag-version
+
+# 2. コミット
+git add package.json
+git commit -m "chore(release): bump version to <new-version>"
+
+# 3. タグを打って push
+git tag v<new-version>
+git push origin main
+git push origin v<new-version>
 ```
+
+GitHub Actions がタグ push を検知し、ビルド・GitHub Release assets アップロード・npm publish を自動実行する。
