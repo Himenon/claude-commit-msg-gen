@@ -46,13 +46,15 @@ PLATFORMS=(
   "linux/arm64"
 )
 
+VERSION="v$(grep '"version"' "$ROOT_DIR/package.json" | sed 's/.*"version": *"\([^"]*\)".*/\1/')"
+
 for PLATFORM in "${PLATFORMS[@]}"; do
   OS="${PLATFORM%/*}"
   ARCH="${PLATFORM#*/}"
   OUTPUT="$BIN_DIR/claude-commit-msg-gen-${OS}-${ARCH}"
-  echo "Building ${OS}/${ARCH} -> $(basename "$OUTPUT")"
+  echo "Building ${OS}/${ARCH} -> $(basename "$OUTPUT") (${VERSION})"
   cd "$GO_DIR"
-  GOOS="$OS" GOARCH="$ARCH" go build -o "$OUTPUT" .
+  GOOS="$OS" GOARCH="$ARCH" go build -ldflags "-X main.version=${VERSION}" -o "$OUTPUT" .
 done
 
 generate_wrapper

@@ -35,7 +35,7 @@ jobs:
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
-        run: go build -o "../bin/claude-commit-msg-gen-${{ matrix.goos }}-${{ matrix.goarch }}" .
+        run: go build -ldflags "-X main.version=${{ github.ref_name }}" -o "../bin/claude-commit-msg-gen-${{ matrix.goos }}-${{ matrix.goarch }}" .
 
       - name: Upload artifact
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0

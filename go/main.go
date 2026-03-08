@@ -14,6 +14,9 @@ import (
 	"time"
 )
 
+// version はビルド時に -ldflags "-X main.version=vX.Y.Z" で注入される
+var version = "dev"
+
 const (
 	defaultBaseURL      = "https://api.anthropic.com"
 	anthropicAPIVersion = "2023-06-01"
@@ -69,6 +72,11 @@ func main() {
 	// このツールは常に exit 0 で終了し、git commit を止めない設計
 	// 理由: API障害や設定ミスがあっても commit ワークフローを中断させない
 	//       エラー内容は stderr に出力し、ユーザーに通知する
+
+	if len(os.Args) >= 2 && (os.Args[1] == "--version" || os.Args[1] == "-v") {
+		fmt.Println(version)
+		os.Exit(0)
+	}
 
 	if len(os.Args) < 2 {
 		fmt.Fprintln(os.Stderr, "[claude-commit-msg-gen] Usage: claude-commit-msg-gen <commit-msg-file> [commit-source]")

@@ -36,13 +36,23 @@ echo "Downloading ${ASSET_NAME} ${VERSION} ..."
 curl -fsSL "$DOWNLOAD_URL" -o "${INSTALL_DIR}/${BINARY_NAME}"
 chmod +x "${INSTALL_DIR}/${BINARY_NAME}"
 echo "Installed: ${INSTALL_DIR}/${BINARY_NAME}"
+echo ""
 
-# PATH guidance
 case ":${PATH}:" in
   *":${INSTALL_DIR}:"*) ;;
   *)
-    echo ""
-    echo "Add the following to your shell profile to use the command:"
+    echo "Add ${INSTALL_DIR} to your PATH:"
     echo "  export PATH=\"${INSTALL_DIR}:\$PATH\""
+    echo ""
     ;;
 esac
+
+echo "Setup:"
+echo "  1. Set your Anthropic API key:"
+echo "       export ANTHROPIC_API_KEY=\"sk-ant-...\""
+echo "  2. Run in your repository:"
+echo "       lefthook install"
+echo "  3. Stage files and commit — the message is generated automatically:"
+echo "       git add <files> && git commit"
+echo ""
+echo "Version: ${INSTALL_DIR}/${BINARY_NAME} --version"
