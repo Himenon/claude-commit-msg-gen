@@ -1,6 +1,6 @@
 {
   "name": "@himenon/claude-commit-msg-gen",
-  "version": "0.0.3",
+  "version": "0.1.1",
   "description": "Claude API を使って git diff から Conventional Commits 形式のコミットメッセージを自動生成する CLI ツール",
   "license": "MIT",
   "author": "K.Himeno",
@@ -25,7 +25,7 @@
     "oxfmt": "^0.36.0"
   },
   "packageManager": "pnpm@10.31.0",
-    "engines": {
+  "engines": {
     "node": ">= 24.13.0"
   }
 }
