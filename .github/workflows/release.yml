@@ -1,0 +1,101 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build binaries
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - goos: darwin
+            goarch: arm64
+          - goos: darwin
+            goarch: amd64
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup Go
+        uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417 # v6.3.0
+        with:
+          go-version: "1.26"
+
+      - name: Build
+        working-directory: go
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          go build -o "../bin/claude-commit-msg-gen-${{ matrix.goos }}-${{ matrix.goarch }}" .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: binary-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: bin/claude-commit-msg-gen-${{ matrix.goos }}-${{ matrix.goarch }}
+
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Download all binaries
+        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
+        with:
+          pattern: binary-*
+          path: bin
+          merge-multiple: true
+
+      - name: Generate wrapper script
+        run: |
+          cat > bin/claude-commit-msg-gen << 'EOF'
+          #!/bin/sh
+          OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
+          ARCH="$(uname -m)"
+          case "$ARCH" in
+            arm64|aarch64) ARCH="arm64" ;;
+            x86_64|amd64)  ARCH="amd64" ;;
+          esac
+          DIR="$(cd "$(dirname "$0")" && pwd)"
+          BINARY="$DIR/claude-commit-msg-gen-${OS}-${ARCH}"
+          if [ ! -x "$BINARY" ]; then
+            echo "[claude-commit-msg-gen] Binary not found: $BINARY" >&2
+            exit 0
+          fi
+          exec "$BINARY" "$@"
+          EOF
+          chmod +x bin/claude-commit-msg-gen
+          chmod +x bin/claude-commit-msg-gen-*
+
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Set version from tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          npm version "$VERSION" --no-git-tag-version
+
+      - name: Publish
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

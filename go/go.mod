@@ -1,3 +1,3 @@
 module github.com/Himenon/claude-commit-msg-gen
 
-go 1.23
+go 1.26
