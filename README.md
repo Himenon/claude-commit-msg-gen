@@ -62,7 +62,7 @@ curl -fsSL https://raw.githubusercontent.com/evilmartians/lefthook/master/script
 ### 2. リポジトリのクローン
 
 ```sh
-git clone https://github.com/your-org/claude-commit-msg-gen.git
+git clone https://github.com/Himenon/claude-commit-msg-gen.git
 cd claude-commit-msg-gen
 ```
 
@@ -79,7 +79,7 @@ lefthook install
 既存の Git リポジトリに本プロジェクトのファイルを取り込む場合は、以下のコマンドで必要なファイルを一括ダウンロードできます。
 
 ```sh
-REPO_URL="https://raw.githubusercontent.com/your-org/claude-commit-msg-gen/main"
+REPO_URL="https://raw.githubusercontent.com/Himenon/claude-commit-msg-gen/main"
 
 # スクリプトとプロンプトをダウンロード
 mkdir -p scripts
