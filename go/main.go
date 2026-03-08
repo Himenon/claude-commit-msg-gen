@@ -175,6 +175,54 @@ func main() {
 	fmt.Fprintf(os.Stderr, "[claude-commit-msg-gen] 生成されたコミットメッセージ: %s\n", commitMsg)
 }
 
+// cleanMessage はAPIレスポンスからコミットメッセージとして不適切な文字列を除去する。
+// バッククォートを含む行（コードブロックマーカー等）を除去し、
+// Conventional Commits形式（type(scope): subject）の行を優先して返す。
+func cleanMessage(raw string) string {
+	var candidates []string
+	for _, line := range strings.Split(raw, "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.Contains(line, "`") {
+			continue
+		}
+		candidates = append(candidates, line)
+	}
+
+	// Conventional Commits形式の行を優先する
+	for _, line := range candidates {
+		if isConventionalCommit(line) {
+			return line
+		}
+	}
+
+	// 該当行がなければ最初の空でない行を返す
+	if len(candidates) > 0 {
+		return candidates[0]
+	}
+
+	return strings.TrimSpace(raw)
+}
+
+// isConventionalCommit は type(scope): subject 形式かどうかを判定する
+func isConventionalCommit(s string) bool {
+	prefix, _, ok := strings.Cut(s, ":")
+	if !ok {
+		return false
+	}
+	// type または type(scope) の形式であることを確認する
+	// type は小文字アルファベットのみ
+	typeStr, _, _ := strings.Cut(prefix, "(")
+	if len(typeStr) == 0 {
+		return false
+	}
+	for _, c := range typeStr {
+		if c < 'a' || c > 'z' {
+			return false
+		}
+	}
+	return true
+}
+
 func getRepoRoot() (string, error) {
 	out, err := exec.Command("git", "rev-parse", "--show-toplevel").Output()
 	if err != nil {
@@ -243,7 +291,7 @@ func generateCommitMessage(apiURL, apiKey, model string, maxTokens int, promptTe
 
 	for _, block := range respBody.Content {
 		if block.Type == "text" {
-			return strings.TrimSpace(block.Text), nil
+			return cleanMessage(block.Text), nil
 		}
 	}
 
