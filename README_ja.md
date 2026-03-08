@@ -6,83 +6,41 @@
 
 ## セットアップ
 
-### 1. Anthropic API キーを設定
-
 ```sh
-export ANTHROPIC_API_KEY="sk-ant-..."
-```
+# 1. 本ライブラリのインストール
+# Without Node.js
+curl -fsSL https://raw.githubusercontent.com/Himenon/claude-commit-msg-gen/main/scripts/install.sh | sh
+# With Node.js
+pnpm install -g @himenon/
 
-### 2. Lefthook をインストール
+# Installできているか確認する
+claude-commit-msg-gen --version
 
-```sh
+## 2. lefthookのインストール
 brew install lefthook
 # または
 pnpm add -g lefthook
+
+# 3. Anthropic API キーを設定
+# .bashrc, .zshrc, .fish/config.fish
+export ANTHROPIC_API_KEY="sk-ant-..."
 ```
 
-### 3. バイナリをインストール
+## lefthookのセットアップ
 
-**curl でインストール（Node.js 不要）:**
+1. `lefthook.yml`に以下の内容を記述する
+    ```yaml
+    prepare-commit-msg:
+      jobs:
+        - name: auto-commit-message
+          run: claude-commit-msg-gen
+    ```
+2. `lefthook install`を実行する。
 
-```sh
-curl -fsSL https://raw.githubusercontent.com/Himenon/claude-commit-msg-gen/main/scripts/install.sh | sh
-```
+### lefthookをプロジェクトに含めたくない場合もしくは、プロジェクトのlefthookを汚染したくない場合
 
-インストール先を変更する場合:
+1. `.gitignore`に`lefthook-local.yml`を追加する
+2. **lefthook-local.yml**に[lefthookのセットアップ](#lefthookのセットアップ)の内容を記述する
+3. `lefthook install`を実行する。
 
-```sh
-INSTALL_DIR="$HOME/.local/bin" curl -fsSL https://raw.githubusercontent.com/Himenon/claude-commit-msg-gen/main/scripts/install.sh | sh
-```
 
-**npm / pnpm でインストール:**
-
-```sh
-pnpm install -g @himenon/claude-commit-msg-gen
-# または
-npm install -g @himenon/claude-commit-msg-gen
-```
-
-### 4. フックを有効化
-
-```sh
-lefthook install
-```
-
-以上で `git commit` 時にコミットメッセージが自動生成されます。
-
-## API キーをシェル環境に書きたくない場合
-
-`lefthook-local.yml` に API キーを記述する方法があります。このファイルは `.gitignore` 対象のため、リポジトリに混入しません。
-
-```yaml
-# lefthook-local.yml（.gitignore 対象）
-prepare-commit-msg:
-  jobs:
-    - name: auto-commit-message
-      env:
-        ANTHROPIC_API_KEY: "sk-ant-..."
-```
-
-`lefthook-local.yml` は `lefthook.yml` の設定を上書き・マージします。記述した `env` のみが上書きされ、他の設定は `lefthook.yml` の値が引き続き使われます。
-
-## トラブルシューティング
-
-**`Binary not found` と表示される**
-
-```sh
-pnpm run build
-```
-
-**`ANTHROPIC_API_KEY が未設定` と表示される**
-
-```sh
-echo $ANTHROPIC_API_KEY
-```
-
-**自動生成を一時的に無効にしたい**
-
-```sh
-LEFTHOOK=0 git commit
-```
-
-> `claude` CLI を使ったシェルスクリプトによる代替実装は [docs/SHELL_SCRIPT_ALTERNATIVE.md](docs/SHELL_SCRIPT_ALTERNATIVE.md) を参照してください。
