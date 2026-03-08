@@ -26,17 +26,16 @@ npm パッケージ名: `@himenon/claude-commit-msg-gen`
   - `env -u CLAUDECODE claude --print` で Claude CLI を呼び出し
   - `{1}` = commit message ファイル、`{2}` = commit source（`merge` / `message` 時はスキップ）
   - エラー時は `exit 0` で git commit を止めない
-- `scripts/commit-prompt.txt` にプロンプトを外部化（後から変更可能）
 
 ### 2. 設定の外部化
 
 `lefthook.yml` の `env` セクションに以下を明示:
 
-| 環境変数             | デフォルト値                | 用途                                 |
-| -------------------- | --------------------------- | ------------------------------------ |
-| `CLAUDE_MODEL`       | `claude-haiku-4-5-20251001` | 使用モデル                           |
-| `CLAUDE_MAX_TOKENS`  | `"150"`                     | 最大トークン数                       |
-| `COMMIT_PROMPT_FILE` | `scripts/commit-prompt.txt` | プロンプトファイルパス（相対パス可） |
+| 環境変数            | デフォルト値                | 用途                                         |
+| ------------------- | --------------------------- | -------------------------------------------- |
+| `CLAUDE_MODEL`      | `claude-haiku-4-5-20251001` | 使用モデル                                   |
+| `CLAUDE_MAX_TOKENS` | `"150"`                     | 最大トークン数                               |
+| `COMMIT_PROMPT`     | `""`                        | コミットメッセージを生成するためのプロンプト |
 
 ### 3. Go バイナリ実装への移行
 

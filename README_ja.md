@@ -29,12 +29,12 @@ export ANTHROPIC_API_KEY="sk-ant-..."
 ## lefthookのセットアップ
 
 1. `lefthook.yml`に以下の内容を記述する
-    ```yaml
-    prepare-commit-msg:
-      jobs:
-        - name: auto-commit-message
-          run: claude-commit-msg-gen
-    ```
+   ```yaml
+   prepare-commit-msg:
+     jobs:
+       - name: auto-commit-message
+         run: claude-commit-msg-gen
+   ```
 2. `lefthook install`を実行する。
 
 ### lefthookをプロジェクトに含めたくない場合もしくは、プロジェクトのlefthookを汚染したくない場合
@@ -42,5 +42,3 @@ export ANTHROPIC_API_KEY="sk-ant-..."
 1. `.gitignore`に`lefthook-local.yml`を追加する
 2. **lefthook-local.yml**に[lefthookのセットアップ](#lefthookのセットアップ)の内容を記述する
 3. `lefthook install`を実行する。
-
-

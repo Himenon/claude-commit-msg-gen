@@ -10,7 +10,6 @@ git commit
        └─ bin/claude-commit-msg-gen（ラッパー）
             └─ bin/claude-commit-msg-gen-{os}-{arch}（Go バイナリ）
                  ├─ git diff --cached
-                 ├─ scripts/commit-prompt.txt + diff → Anthropic API
                  └─ 生成メッセージを COMMIT_EDITMSG に書き込む
 ```
 
@@ -30,7 +29,6 @@ git commit
 ├── scripts/
 │   ├── auto-commit-msg.sh            # シェルスクリプト版（代替案）
 │   ├── build.sh                      # クロスコンパイルスクリプト
-│   ├── commit-prompt.txt             # プロンプトテンプレート（変更可能）
 │   └── install.sh                    # curl インストールスクリプト
 ├── bin/                              # ビルド済みバイナリ（.gitignore 対象）
 │   ├── claude-commit-msg-gen         # OS/ARCH 自動判定ラッパースクリプト
@@ -62,14 +60,10 @@ Anthropic API（`POST /v1/messages`）を標準ライブラリのみで直接呼
 | `ANTHROPIC_API_KEY`  | —                           | Anthropic API キー（必須）。未設定時は `ANTHROPIC_AUTH_TOKEN` を参照 |
 | `CLAUDE_MODEL`       | `claude-haiku-4-5-20251001` | 使用モデル                                                           |
 | `CLAUDE_MAX_TOKENS`  | `150`                       | Anthropic API の `max_tokens` に直接渡される                         |
-| `COMMIT_PROMPT_FILE` | `scripts/commit-prompt.txt` | プロンプトファイルのパス（相対パスはリポジトリルート基準）           |
+| `COMMIT_PROMPT`      | `""`                        | コミットメッセージ生成用プロンプト                                   |
 | `ANTHROPIC_BASE_URL` | `https://api.anthropic.com` | API エンドポイント（プロキシ利用時に変更）                           |
 
 **エラーハンドリング方針:** 全エラーで `exit 0`。API 障害・設定ミスがあっても `git commit` を止めない。
-
-### `scripts/commit-prompt.txt`
-
-Claude API に渡すプロンプトのテンプレート。このファイルを編集することでプロジェクト固有のルールを追加できる。
 
 ### `bin/claude-commit-msg-gen`（ラッパー）
 
@@ -88,8 +82,7 @@ pnpm run build
        └─ bin/claude-commit-msg-gen（ラッパー）を生成
 
 pnpm publish（または git tag v* push）
-  └─ bin/ と scripts/commit-prompt.txt を同梱して npm へ公開
-     （bin/ は .gitignore 対象だが package.json の files に含まれるため配布される）
+  └─ bin/
 ```
 
 ## GitHub Actions

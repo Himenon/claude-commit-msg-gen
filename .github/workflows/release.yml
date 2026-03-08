@@ -84,7 +84,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version-file: 'package.json'
+          node-version-file: "package.json"
           registry-url: "https://npm.pkg.github.com"
           scope: "@Himenon"
           cache: "pnpm"
@@ -113,7 +113,7 @@ jobs:
     needs: build
     permissions:
       contents: read
-      id-token: write  # npm provenance（パッケージの出所証明）に必要
+      id-token: write # npm provenance（パッケージの出所証明）に必要
 
     steps:
       - name: Checkout
@@ -125,7 +125,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version-file: 'package.json'
+          node-version-file: "package.json"
           cache: "pnpm"
 
       - name: Download all binaries

@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -123,26 +122,7 @@ func main() {
 		}
 	}
 
-	// プロンプトファイルのパスを解決する
-	// 相対パスが渡された場合はリポジトリルートを基準に絶対パスへ変換する
-	repoRoot, err := getRepoRoot()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "[claude-commit-msg-gen] リポジトリルートの取得に失敗しました: %v\n", err)
-		os.Exit(0)
-	}
-
-	promptFilePath := os.Getenv("COMMIT_PROMPT_FILE")
-	if promptFilePath == "" {
-		promptFilePath = filepath.Join(repoRoot, "scripts", "commit-prompt.txt")
-	} else if !filepath.IsAbs(promptFilePath) {
-		promptFilePath = filepath.Join(repoRoot, promptFilePath)
-	}
-
-	promptBytes, err := os.ReadFile(promptFilePath)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "[claude-commit-msg-gen] プロンプトファイルが見つかりません: %s\n", promptFilePath)
-		os.Exit(0)
-	}
+	commitPrompt := os.Getenv("COMMIT_PROMPT")
 
 	// ステージングされた差分を取得する
 	diff, err := getStagedDiff()
@@ -165,7 +145,7 @@ func main() {
 	apiURL := baseURL + "/v1/messages"
 
 	// commit message を生成する
-	commitMsg, err := generateCommitMessage(apiURL, apiKey, model, maxTokens, string(promptBytes), diff)
+	commitMsg, err := generateCommitMessage(apiURL, apiKey, model, maxTokens, commitPrompt, diff)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "[claude-commit-msg-gen] コミットメッセージの生成に失敗しました: %v\n", err)
 		os.Exit(0)

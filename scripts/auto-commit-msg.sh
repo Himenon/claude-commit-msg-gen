@@ -7,7 +7,7 @@
 # 環境変数:
 #   CLAUDE_MODEL      : 使用するClaudeモデル (デフォルト: claude-haiku-4-5-20251001)
 #   CLAUDE_MAX_TOKENS : 最大トークン数 (デフォルト: 150)
-#   COMMIT_PROMPT_FILE: プロンプトファイルのパス (デフォルト: scripts/commit-prompt.txt)
+#   COMMIT_PROMPT     : コミットメッセージ生成用プロンプト
 
 COMMIT_MSG_FILE="$1"
 COMMIT_SOURCE="$2"
@@ -30,17 +30,6 @@ MAX_TOKENS="${CLAUDE_MAX_TOKENS:-150}"
 # プロジェクトルートを取得
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 
-# プロンプトファイルのパス
-# COMMIT_PROMPT_FILEが相対パスの場合はプロジェクトルートを基準に解決する
-if [ -n "$COMMIT_PROMPT_FILE" ]; then
-  case "$COMMIT_PROMPT_FILE" in
-    /*) PROMPT_FILE="$COMMIT_PROMPT_FILE" ;;
-    *)  PROMPT_FILE="${REPO_ROOT}/${COMMIT_PROMPT_FILE}" ;;
-  esac
-else
-  PROMPT_FILE="${REPO_ROOT}/scripts/commit-prompt.txt"
-fi
-
 # プロンプトファイルが存在しない場合はスキップ
 if [ ! -f "$PROMPT_FILE" ]; then
   echo "[auto-commit-msg] プロンプトファイルが見つかりません: $PROMPT_FILE" >&2
@@ -57,7 +46,7 @@ fi
 
 # プロンプトを構築
 # MAX_TOKENSをプロンプトに含めて出力量を制御する
-PROMPT="$(cat "$PROMPT_FILE")
+PROMPT="$COMMIT_PROMPT"
 （出力は${MAX_TOKENS}トークン以内に収めること）
 
 ---

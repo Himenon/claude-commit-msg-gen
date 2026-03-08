@@ -37,11 +37,10 @@ prepare-commit-msg:
       env:
         CLAUDE_MODEL: claude-haiku-4-5-20251001
         CLAUDE_MAX_TOKENS: "150"
-        COMMIT_PROMPT_FILE: scripts/commit-prompt.txt
+        COMMIT_PROMPT: ""
       fail_text: "コミットメッセージの自動生成をスキップしました"
 ```
 
 ## 実装ファイル
 
 - `scripts/auto-commit-msg.sh` — シェルスクリプト本体
-- `scripts/commit-prompt.txt` — プロンプトテンプレート（バイナリ版と共通）

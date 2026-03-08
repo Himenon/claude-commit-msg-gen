@@ -12,8 +12,7 @@
     "claude-commit-msg-gen": "bin/claude-commit-msg-gen"
   },
   "files": [
-    "bin/",
-    "scripts/commit-prompt.txt"
+    "bin/"
   ],
   "scripts": {
     "build": "bash scripts/build.sh",
@@ -24,8 +23,8 @@
   "devDependencies": {
     "oxfmt": "^0.36.0"
   },
-  "packageManager": "pnpm@10.31.0",
   "engines": {
     "node": ">= 24.13.0"
-  }
+  },
+  "packageManager": "pnpm@10.31.0"
 }
