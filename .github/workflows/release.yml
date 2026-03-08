@@ -102,11 +102,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Set version from tag
-        run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          pnpm version "$VERSION" --no-git-tag-version
-
       - name: Publish to GitHub Packages
         run: pnpm run release:github:registry
         env:
@@ -145,11 +140,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Set version from tag
-        run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          pnpm version "$VERSION" --no-git-tag-version
 
       - name: Publish to npm (with provenance)
         # npm Trusted Publishers（OIDC）による認証
