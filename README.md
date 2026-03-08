@@ -71,4 +71,4 @@ echo $ANTHROPIC_API_KEY
 LEFTHOOK=0 git commit
 ```
 
-> For the shell-script alternative using the `claude` CLI, see [docs/SHELL-SCRIPT-ALTERNATIVE.md](docs/SHELL-SCRIPT-ALTERNATIVE.md).
+> For the shell-script alternative using the `claude` CLI, see [docs/SHELL_SCRIPT_ALTERNATIVE.md](docs/SHELL_SCRIPT_ALTERNATIVE.md).

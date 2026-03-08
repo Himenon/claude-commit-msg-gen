@@ -71,4 +71,4 @@ echo $ANTHROPIC_API_KEY
 LEFTHOOK=0 git commit
 ```
 
-> `claude` CLI を使ったシェルスクリプトによる代替実装は [docs/SHELL-SCRIPT-ALTERNATIVE.md](docs/SHELL-SCRIPT-ALTERNATIVE.md) を参照してください。
+> `claude` CLI を使ったシェルスクリプトによる代替実装は [docs/SHELL_SCRIPT_ALTERNATIVE.md](docs/SHELL_SCRIPT_ALTERNATIVE.md) を参照してください。
