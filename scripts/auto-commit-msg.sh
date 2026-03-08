@@ -1,0 +1,78 @@
+#!/bin/sh
+# auto-commit-msg.sh
+#
+# prepare-commit-msg フック用スクリプト
+# git diffを解析してClaudeにConventional Commits形式のコミットメッセージを生成させる
+#
+# 環境変数:
+#   CLAUDE_MODEL      : 使用するClaudeモデル (デフォルト: claude-haiku-4-5-20251001)
+#   CLAUDE_MAX_TOKENS : 最大トークン数 (デフォルト: 150)
+#   COMMIT_PROMPT_FILE: プロンプトファイルのパス (デフォルト: scripts/commit-prompt.txt)
+
+COMMIT_MSG_FILE="$1"
+COMMIT_SOURCE="$2"
+
+# Merge Commitの場合はスキップ
+if [ "$COMMIT_SOURCE" = "merge" ]; then
+  exit 0
+fi
+
+# 既にコミットメッセージが入力されている場合はスキップ（-m オプション等）
+if [ "$COMMIT_SOURCE" = "message" ]; then
+  exit 0
+fi
+
+# 設定値（環境変数で上書き可能）
+MODEL="${CLAUDE_MODEL:-claude-haiku-4-5-20251001}"
+MAX_TOKENS="${CLAUDE_MAX_TOKENS:-150}"
+
+# プロジェクトルートを取得
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+# プロンプトファイルのパス
+PROMPT_FILE="${COMMIT_PROMPT_FILE:-${REPO_ROOT}/scripts/commit-prompt.txt}"
+
+# プロンプトファイルが存在しない場合はスキップ
+if [ ! -f "$PROMPT_FILE" ]; then
+  echo "[auto-commit-msg] プロンプトファイルが見つかりません: $PROMPT_FILE" >&2
+  exit 0
+fi
+
+# ステージングされた差分を取得
+DIFF="$(git diff --cached --no-color 2>/dev/null)"
+
+# 差分がない場合はスキップ
+if [ -z "$DIFF" ]; then
+  exit 0
+fi
+
+# プロンプトを構築
+PROMPT="$(cat "$PROMPT_FILE")
+
+---
+$(echo "$DIFF" | head -c 8000)
+"
+
+# Claudeにコミットメッセージを生成させる
+GENERATED_MSG="$(echo "$PROMPT" | claude --print \
+  --model "$MODEL" \
+  --max-budget-usd 0.01 \
+  --output-format text \
+  --dangerously-skip-permissions \
+  2>/dev/null)"
+
+# 生成に失敗した場合はスキップ（git commitを止めない）
+if [ $? -ne 0 ] || [ -z "$GENERATED_MSG" ]; then
+  echo "[auto-commit-msg] コミットメッセージの生成に失敗しました（処理を継続します）" >&2
+  exit 0
+fi
+
+# 生成されたメッセージから余分な文字を除去（先頭・末尾の空白、引用符など）
+CLEANED_MSG="$(echo "$GENERATED_MSG" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//' | head -1)"
+
+# コミットメッセージファイルに書き込む
+# 既存の内容（コメント行）を保持しつつ先頭に挿入
+EXISTING_CONTENT="$(cat "$COMMIT_MSG_FILE")"
+printf '%s\n\n%s\n' "$CLEANED_MSG" "$EXISTING_CONTENT" > "$COMMIT_MSG_FILE"
+
+echo "[auto-commit-msg] コミットメッセージを生成しました: $CLEANED_MSG" >&2
