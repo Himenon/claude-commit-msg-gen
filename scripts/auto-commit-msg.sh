@@ -70,8 +70,26 @@ if [ $? -ne 0 ] || [ -z "$GENERATED_MSG" ]; then
   exit 0
 fi
 
-# 生成されたメッセージから余分な文字を除去（先頭・末尾の空白、引用符など）
-CLEANED_MSG="$(echo "$GENERATED_MSG" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//' | head -1)"
+# 生成されたメッセージからConventional Commits形式の行を抽出する
+# コードブロックマーカー・引用符・空白行を除去し、type(scope): subject 形式の行を優先して取得する
+CLEANED_MSG="$(echo "$GENERATED_MSG" \
+  | grep -v '^\`\`\`' \
+  | grep -v '^```' \
+  | sed 's/^[[:space:]]*//' \
+  | sed 's/[[:space:]]*$//' \
+  | grep -E '^[a-z]+(\([^)]+\))?: .+' \
+  | head -1)"
+
+# Conventional Commits形式の行が見つからない場合は最初の空でない行を使用する
+if [ -z "$CLEANED_MSG" ]; then
+  CLEANED_MSG="$(echo "$GENERATED_MSG" \
+    | grep -v '^\`\`\`' \
+    | grep -v '^```' \
+    | sed 's/^[[:space:]]*//' \
+    | sed 's/[[:space:]]*$//' \
+    | grep -v '^$' \
+    | head -1)"
+fi
 
 # コミットメッセージファイルに書き込む
 # 既存の内容（コメント行）を保持しつつ先頭に挿入
