@@ -1,5 +1,9 @@
 # CLAUDE.md
 
+プロジェクトの構造・コンポーネント設計は **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** を参照してください。
+
+---
+
 ## プロジェクト概要
 
 `claude-commit-msg-gen` — Claude API と Lefthook を組み合わせ、`git commit` 時に Conventional Commits 形式のコミットメッセージを自動生成するツール。
@@ -49,37 +53,18 @@ npm パッケージ名: `@himenon/claude-commit-msg-gen`
 
 ### 5. GitHub Actions
 
-`.github/workflows/release.yml` — `v*` タグ push 時に自動ビルド・publish
-
+- `.github/workflows/ci.yml` — 全ブランチ push と pull_request でビルド検証
+- `.github/workflows/release.yml` — `v*` タグ push 時に自動ビルド・publish
 - 全 action は SHA pinning 済み
-- matrix で4プラットフォームを並列ビルド → artifact 結合 → npm publish
 - `NPM_TOKEN` を GitHub Secrets に登録が必要
 
 ### 6. ドキュメント整理
 
 - `README.md` — Go バイナリ（メイン）の説明のみ
+- `docs/ARCHITECTURE.md` — プロジェクト構造・コンポーネント設計
 - `docs/shell-script-alternative.md` — シェルスクリプト版の代替案を分離
 
 ---
-
-## ファイル構成
-
-```
-.
-├── .github/workflows/release.yml    # タグ push → npm publish CI
-├── docs/
-│   └── shell-script-alternative.md # シェルスクリプト版の代替実装
-├── go/
-│   ├── main.go                      # Go 実装（Anthropic API 直接呼び出し）
-│   └── go.mod                       # Go 1.26、外部依存なし
-├── scripts/
-│   ├── auto-commit-msg.sh           # シェルスクリプト版（代替案）
-│   ├── build.sh                     # クロスコンパイルスクリプト
-│   └── commit-prompt.txt            # プロンプトテンプレート
-├── bin/                             # ビルド済みバイナリ（.gitignore 対象）
-├── lefthook.yml                     # prepare-commit-msg フック設定
-└── package.json                     # @himenon/claude-commit-msg-gen
-```
 
 ## ローカルでのビルド・テスト
 
