@@ -57,7 +57,7 @@ npm パッケージ名: `@himenon/claude-commit-msg-gen`
 ### 5. GitHub Actions
 
 - `.github/workflows/ci.yml` — 全ブランチ push と pull_request でビルド検証
-- `.github/workflows/release.yml` — `v*` タグ push 時に自動ビルド・publish
+- `.github/workflows/release.yml` — GitHub Release 作成時に自動ビルド・publish
 - 全 action は SHA pinning 済み
 - `NPM_TOKEN` を GitHub Secrets に登録が必要
 
@@ -80,21 +80,23 @@ git commit       # フックが起動し自動生成される
 
 ## リリース手順
 
-タグを打つ前に必ず package.json のバージョンを更新してコミットすること。
+GitHub Release を作成したタイミングで Actions が起動する。
 
 ```sh
 # 1. package.json のバージョンを更新
 pnpm version <new-version> --no-git-tag-version
 # 例: pnpm version 0.0.4 --no-git-tag-version
 
-# 2. コミット
+# 2. コミットして push
 git add package.json
 git commit -m "chore(release): bump version to <new-version>"
-
-# 3. タグを打って push
-git tag v<new-version>
 git push origin main
-git push origin v<new-version>
 ```
 
-GitHub Actions がタグ push を検知し、ビルド・GitHub Release assets アップロード・npm publish を自動実行する。
+3. GitHub 上で Release を作成する（タグも同時に作成する）
+   - https://github.com/Himenon/claude-commit-msg-gen/releases/new
+   - Tag: `v<new-version>`（新規作成）
+   - Title: `v<new-version>`
+   - "Generate release notes" で自動生成 → Publish release
+
+GitHub Actions が Release 作成を検知し、ビルド・バイナリアップロード・npm publish を自動実行する。
