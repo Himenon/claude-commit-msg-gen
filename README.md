@@ -40,9 +40,23 @@ prepare-commit-msg:
         CLAUDE_MAX_TOKENS: "150"
 ```
 
-`COMMIT_PROMPT` は省略可能です。省略した場合、Conventional Commits 形式（subject は日本語50文字以内）を生成するデフォルトプロンプトが使用されます。
+`COMMIT_PROMPT` は省略可能です。省略した場合、Conventional Commits 形式のコミットメッセージを生成するデフォルトプロンプトが使用されます。
 
-プロジェクト固有のルールを追加したい場合は `COMMIT_PROMPT` で上書きできます。
+`COMMIT_LANGUAGE` でコミットメッセージの言語を切り替えられます。
+
+| 値 | 言語 |
+| -- | ---- |
+| `ja`（デフォルト） | 日本語（subject は50文字以内） |
+| `en` | 英語（subject は72文字以内） |
+
+```yaml
+      env:
+        CLAUDE_MODEL: claude-haiku-4-5-20251001
+        CLAUDE_MAX_TOKENS: "150"
+        COMMIT_LANGUAGE: en  # 英語で生成する場合
+```
+
+プロジェクト固有のルールを追加したい場合は `COMMIT_PROMPT` で上書きできます。`COMMIT_PROMPT` を指定した場合、`COMMIT_LANGUAGE` は無視されます。
 
 ```yaml
       env:
