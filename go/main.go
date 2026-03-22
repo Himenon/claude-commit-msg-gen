@@ -30,8 +30,8 @@ const (
 	//       生成トークン数を抑えることで実行速度を向上し API コストを削減する
 	defaultMaxTokens = 150
 
-	// defaultCommitPrompt: COMMIT_PROMPT 未設定時のデフォルトプロンプト
-	defaultCommitPrompt = `以下のgit diffを分析し、Conventional Commits形式のコミットメッセージを1行だけ生成してください。
+	// defaultCommitPromptJa: COMMIT_PROMPT 未設定時のデフォルトプロンプト（日本語）
+	defaultCommitPromptJa = `以下のgit diffを分析し、Conventional Commits形式のコミットメッセージを1行だけ生成してください。
 
 形式: type(scope): subject
 
@@ -57,6 +57,34 @@ typeの選択基準:
 - 「データ」「正しい」「通常」「異常」「大量」「少量」などの抽象的表現を使わないこと。変更対象・処理内容・状態を具体的な技術用語で表現すること
 - 主語を具体的に書くこと。「これ」「それ」「あれ」などの指示詞を使わないこと
 - 「大きい」「小さい」「多い」「少ない」のような比較表現を使う場合は比較対象を明示すること（例: 「リクエスト数が毎秒100件を超える場合」）`
+
+	// defaultCommitPromptEn: COMMIT_PROMPT 未設定時のデフォルトプロンプト（英語）
+	defaultCommitPromptEn = `Analyze the following git diff and generate exactly one commit message in Conventional Commits format.
+
+Format: type(scope): subject
+
+Type selection criteria:
+- feat: add new functionality
+- fix: fix a bug
+- docs: documentation changes only
+- style: changes that do not affect code behavior (formatting, whitespace, etc.)
+- refactor: code changes that are neither bug fixes nor new features
+- test: add or modify tests
+- chore: changes to build process or auxiliary tools
+- ci: changes to CI configuration files or scripts
+- perf: performance improvements
+
+Rules:
+- Write the subject in English
+- Keep the subject within 72 characters
+- Do not end with punctuation
+- scope is optional; use the module or file name being changed
+- Output only the single commit message line; no explanation or surrounding text
+
+Writing rules:
+- Avoid abstract expressions. Describe the target of change, the operation, and the state using specific technical terms
+- Use concrete subjects; avoid pronouns such as "it", "this", or "that"
+- When using comparative expressions such as "larger", "smaller", "more", or "fewer", always state the reference point (e.g., "when request count exceeds 100 per second")`
 
 	// apiTimeout: API リクエストのタイムアウト時間
 	// 理由: ネットワーク障害時に無限に待ち続けず、commit ワークフローをブロックしない
@@ -160,7 +188,13 @@ func main() {
 
 	commitPrompt := os.Getenv("COMMIT_PROMPT")
 	if commitPrompt == "" {
-		commitPrompt = defaultCommitPrompt
+		// COMMIT_LANGUAGE: "en" を指定すると英語でコミットメッセージを生成する
+		// 未設定または "ja" の場合は日本語（デフォルト）
+		if os.Getenv("COMMIT_LANGUAGE") == "en" {
+			commitPrompt = defaultCommitPromptEn
+		} else {
+			commitPrompt = defaultCommitPromptJa
+		}
 	}
 
 	// ステージングされた差分を取得する
